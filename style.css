@@ -1,0 +1,40 @@
+/* Client/UI layer */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.wrapper {
+  text-align: center;
+}
+
+#message {
+  font-size: 3rem;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  margin-bottom: 1.5rem;
+}
+
+#change-btn {
+  font-size: 1.1rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  font-weight: 600;
+}
+
+#change-btn:hover {
+  background: #ffffff;
+}
