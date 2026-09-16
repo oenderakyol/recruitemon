@@ -18,16 +18,122 @@ body, html {
   position: relative;
   width: 800px;
   height: 600px;
-  background-image: url('assets/images/start-screen-bg.png');
+  background-image: url('assets/images/start-screen-bg.jpeg');
   background-size: cover;
   background-position: center;
   background-color: #444;
   border: 4px solid #000;
 }
 
+.settings-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  background-color: #4a4a5a;
+  color: #fff;
+  border: 2px solid #2a2a35;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.title-block {
+  position: absolute;
+  top: 24px;
+  width: 100%;
+  text-align: center;
+}
+
+.game-title {
+  margin: 0;
+  padding: 0 0 10px;
+  font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.game-title .letter,
+.game-title .pokeball-o {
+  display: inline-block;
+}
+
+.game-title .letter {
+  color: #f5b942;
+  -webkit-text-stroke: 3px #1a1a1a;
+  text-shadow:
+    2px 2px 0 #1a1a1a,
+    -2px -2px 0 #1a1a1a,
+    2px -2px 0 #1a1a1a,
+    -2px 2px 0 #1a1a1a,
+    5px 5px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Arch the title like a logo lockup: letters dip down toward the edges */
+.game-title .letter:nth-child(1)  { transform: translateY(20px) rotate(-20deg); }
+.game-title .letter:nth-child(2)  { transform: translateY(14px) rotate(-16deg); }
+.game-title .letter:nth-child(3)  { transform: translateY(9px)  rotate(-12deg); }
+.game-title .letter:nth-child(4)  { transform: translateY(5px)  rotate(-8deg); }
+.game-title .letter:nth-child(5)  { transform: translateY(2px)  rotate(-4deg); }
+.game-title .letter:nth-child(6)  { transform: translateY(0)    rotate(0deg); }
+.game-title .letter:nth-child(7)  { transform: translateY(2px)  rotate(4deg); }
+.game-title .letter:nth-child(8)  { transform: translateY(5px)  rotate(8deg); }
+.game-title .pokeball-o           { transform: translateY(9px)  rotate(12deg); }
+.game-title .letter:nth-child(10) { transform: translateY(14px) rotate(16deg); }
+
+/* CSS-only Pokeball standing in for the "O" in "Recruitemon" */
+.pokeball-o {
+  width: 0.78em;
+  height: 0.78em;
+  margin: 0 2px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #e74c3c 0%, #e74c3c 46%, #1a1a1a 46%, #1a1a1a 54%, #fff 54%, #fff 100%);
+  border: 3px solid #1a1a1a;
+  position: relative;
+  vertical-align: -0.12em;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.pokeball-o::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.26em;
+  height: 0.26em;
+  background: #fff;
+  border: 3px solid #1a1a1a;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.game-tagline {
+  margin: 14px 0 0;
+  font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+  font-size: 20px;
+  color: #fff;
+  -webkit-text-stroke: 1.5px #1a1a1a;
+  text-shadow: 3px 3px 0 #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-text {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
 .button-group {
   position: absolute;
-  bottom: 40px;
+  bottom: 90px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -40,8 +146,11 @@ body, html {
   color: white;
   border: 4px solid #5c2a00;
   border-radius: 8px;
+  font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+  font-weight: normal;
   text-transform: uppercase;
-  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
   cursor: pointer;
   box-shadow: inset -4px -4px 0px 0px rgba(0, 0, 0, 0.3);
 }

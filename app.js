@@ -23,3 +23,7 @@ function hideHighScore() {
 document.getElementById('startGameBtn').addEventListener('click', startGame);
 document.getElementById('highScoreBtn').addEventListener('click', showHighScore);
 document.getElementById('closeHighScoreBtn').addEventListener('click', hideHighScore);
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  console.log('Settings clicked...');
+  // Add logic to open a settings panel
+});
