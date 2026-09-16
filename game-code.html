@@ -51,17 +51,24 @@
             position: relative;
             overflow: hidden;
             border: 4px solid var(--ink);
-            background-color: #c9a26a;
+            background-color: #8a5a35;
             background-image:
-                linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
-            background-size: 40px 40px;
+                repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0, rgba(0, 0, 0, 0.08) 2px, transparent 2px, transparent 40px),
+                linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px, 40px 40px;
         }
 
         .booth {
             position: absolute;
-            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 8px 10px;
             font-size: 13px;
+            line-height: 1.2;
             color: var(--gold);
             background: var(--accent-dark);
             border: 3px solid var(--ink);
@@ -69,6 +76,67 @@
             text-align: center;
             box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
         }
+
+        .booth .booth-icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        /* Themed booth palettes, echoing the reference art's distinct "zones" */
+        .booth.theme-devops {
+            background: #2b2b2b;
+            border-color: #0d0d0d;
+            color: #e8c874;
+        }
+
+        .booth.theme-ai {
+            background: #0f1f3d;
+            border-color: #0a1428;
+            color: #7fe3ff;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35), 0 0 14px rgba(127, 227, 255, 0.35) inset;
+        }
+
+        .booth.theme-frontend {
+            background: #efe6d8;
+            border-color: var(--ink);
+            color: #5c2a00;
+        }
+
+        .wall {
+            position: absolute;
+            background: #8d8272;
+            background-image: repeating-linear-gradient(
+                90deg,
+                rgba(0, 0, 0, 0.15) 0,
+                rgba(0, 0, 0, 0.15) 2px,
+                transparent 2px,
+                transparent 20px
+            );
+            border: 2px solid var(--ink);
+            border-radius: 3px;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+        }
+
+        .banner-row {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 14px;
+            display: flex;
+            justify-content: space-evenly;
+            pointer-events: none;
+        }
+
+        .pennant {
+            width: 0;
+            height: 0;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-top: 14px solid var(--accent);
+        }
+        .pennant:nth-child(3n+2) { border-top-color: var(--gold); }
+        .pennant:nth-child(3n) { border-top-color: #8d99ae; }
 
         #world-hud {
             position: absolute;
@@ -82,6 +150,87 @@
             color: #fff;
         }
 
+        .top-hud {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .hud-badge {
+            background: rgba(26, 26, 26, 0.85);
+            border: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 22px;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        #score-badge {
+            color: var(--gold);
+        }
+
+        #world-timer.time-low {
+            border-color: #c0392b;
+            color: #ff8a80;
+        }
+
+        #time-up-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            text-align: center;
+            z-index: 20;
+        }
+
+        #time-up-overlay .headline {
+            font-size: 42px;
+            color: var(--gold);
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        #time-up-overlay .score-line {
+            font-size: 20px;
+            margin: 16px 0 24px;
+        }
+
+        #time-up-overlay .overlay-actions {
+            display: flex;
+            gap: 14px;
+        }
+
+        #menu-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--accent-dark);
+            color: #fff;
+            border: 3px solid var(--ink);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        #menu-btn:active {
+            box-shadow: inset 3px 3px 0px 0px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes idle-bob {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-4px); }
+        }
+
         .npc {
             position: absolute;
             width: 48px;
@@ -92,6 +241,21 @@
             justify-content: center;
             transform: translate(-50%, -50%);
             transition: opacity 0.3s ease;
+            animation: idle-bob 1.6s ease-in-out infinite;
+            filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
+        }
+
+        .npc::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            width: 26px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
         }
 
         .npc-label {
@@ -101,15 +265,17 @@
             transform: translateX(-50%);
             font-size: 10px;
             color: var(--gold);
-            background: rgba(26, 26, 26, 0.8);
+            background: rgba(26, 26, 26, 0.85);
             border: 1px solid var(--ink);
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 2px 8px;
+            border-radius: 10px;
             white-space: nowrap;
         }
 
-        .npc.recruited {
+        .npc.recruited,
+        .npc.rejected {
             opacity: 0.25;
+            animation: none;
         }
 
         #player {
@@ -122,6 +288,20 @@
             justify-content: center;
             transform: translate(-50%, -50%);
             filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
+            animation: idle-bob 1.2s ease-in-out infinite;
+        }
+
+        #player::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            width: 30px;
+            height: 9px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
         }
 
         #interact-prompt {
@@ -170,9 +350,9 @@
 
         .player-sprite {
             position: absolute;
-            bottom: 140px;
+            bottom: 220px;
             left: 70px;
-            font-size: 96px;
+            font-size: 80px;
             transform: scaleX(-1);
             filter: drop-shadow(-2px 4px 0px rgba(0, 0, 0, 0.3));
         }
@@ -194,7 +374,7 @@
         }
 
         #player-status {
-            bottom: 160px;
+            bottom: 230px;
             right: 30px;
         }
 
@@ -212,6 +392,12 @@
             margin-top: 4px;
         }
 
+        .cand-meta {
+            font-size: 10px;
+            margin-top: 6px;
+            color: #5c2a00;
+        }
+
         .bar-container {
             background: #d9d0bf;
             height: 10px;
@@ -224,7 +410,7 @@
             height: 100%;
             transition: width 0.3s ease;
         }
-        .skep-fill { background: #c0392b; width: 100%; }
+        .interest-fill { background: #2a9d8f; width: 40%; }
         .hp-fill { background: #38b000; width: 100%; }
         .budget-fill { background: #0077b6; width: 100%; }
 
@@ -233,12 +419,20 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 130px;
+            height: 210px;
             background: var(--accent-dark);
             border-top: 4px solid var(--accent);
             display: flex;
+            flex-direction: column;
             padding: 12px;
+            gap: 10px;
+        }
+
+        .panel-top {
+            flex: 1;
+            display: flex;
             gap: 12px;
+            min-height: 0;
         }
 
         #dialogue-box {
@@ -248,17 +442,29 @@
             border: 3px solid var(--ink);
             border-radius: 8px;
             padding: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            line-height: 1.4;
+            line-height: 1.35;
+            overflow-y: auto;
         }
 
         #action-matrix {
             flex: 1;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 8px;
+            grid-template-rows: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .decision-row {
+            display: flex;
+            gap: 10px;
+            height: 44px;
+        }
+
+        .decision-row .gba-btn {
+            flex: 1;
+            font-size: 16px;
         }
 
         .gba-btn {
@@ -269,7 +475,7 @@
             font-weight: normal;
             letter-spacing: 0.5px;
             text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.3);
         }
@@ -277,37 +483,43 @@
             box-shadow: inset 3px 3px 0px 0px rgba(0, 0, 0, 0.3);
         }
 
+        .gba-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         .btn-homeoffice { background-color: #c0392b; }
         .btn-fruit { background-color: #f5b942; }
-        .btn-coffee { background-color: #38b000; }
-        .btn-recruit { background-color: var(--accent); }
+        .btn-coffee { background-color: #6d4c2f; }
+        .btn-salary { background-color: #0077b6; }
+        .btn-car { background-color: #6a4caf; grid-column: span 2; }
+        .btn-run { background-color: #555; }
+        .btn-pitch { background-color: var(--accent); }
     </style>
 </head>
 <body>
+
+<!-- Always-visible HUD, sits above whichever screen is active -->
+<div class="top-hud">
+    <div id="score-badge" class="hud-badge pixel-font">&#127942; <span id="score-value">0</span></div>
+    <div id="world-timer" class="hud-badge pixel-font">1:30</div>
+</div>
+<button id="menu-btn" class="pixel-font" onclick="location.href='index.html'">Menu</button>
 
 <!-- ============================= -->
 <!-- WORLD / OVERWORLD (Client/UI) -->
 <!-- ============================= -->
 <div id="world-screen">
-    <div id="world-hud" class="pixel-font">Hired: <span id="hired-count">0</span> / <span id="hired-total">3</span></div>
+    <div class="banner-row" id="banner-row"></div>
 
-    <div class="booth pixel-font" style="top: 16px; left: 16px;">DEVOPS<br>DUNGEON</div>
-    <div class="booth pixel-font" style="top: 16px; right: 16px;">FRONTENER</div>
-    <div class="booth pixel-font" style="bottom: 16px; left: 16px;">AI ARENA</div>
+    <div id="world-hud" class="pixel-font">Hired: <span id="hired-count">0</span> / <span id="hired-total">0</span></div>
 
-    <!-- Talents (Data Layer: positions/labels defined in app state below) -->
-    <div class="npc" id="npc-jr-dev" style="top: 165px; left: 175px;">
-        &#129489;&#8205;&#128187;
-        <span class="npc-label pixel-font">Junior Dev</span>
-    </div>
-    <div class="npc" id="npc-ai-lead" style="top: 125px; left: 600px;">
-        &#129489;&#8205;&#128300;
-        <span class="npc-label pixel-font">AI Lead</span>
-    </div>
-    <div class="npc" id="npc-frontend-fred" style="top: 420px; left: 400px;">
-        &#129489;&#8205;&#127912;
-        <span class="npc-label pixel-font">Frontend Fred</span>
-    </div>
+    <!-- Booths are rendered by JS from the BOOTHS data below, and double as walls -->
+    <div id="booth-layer"></div>
+
+    <!-- Talents are rendered by JS from the TALENT_POOL data below, at random spots -->
+    <div id="npc-layer"></div>
 
     <div id="interact-prompt" class="hidden pixel-font">Press SPACE to talk</div>
 
@@ -322,12 +534,13 @@
     <div id="opponent-status" class="status-box">
         <div class="status-header pixel-font">
             <span id="cand-name">JUNIOR DEV</span>
-            <span>&#9792; Lv.17</span>
+            <span id="cand-level">Lv.3 &middot; Junior Specialist</span>
         </div>
-        <div class="bar-label">SKEPTICISM</div>
+        <div class="bar-label">INTEREST: <span id="interest-text">40%</span></div>
         <div class="bar-container">
-            <div id="skep-bar" class="bar-fill skep-fill"></div>
+            <div id="interest-bar" class="bar-fill interest-fill"></div>
         </div>
+        <div class="cand-meta" id="cand-meta">Wants $80k &middot; Talent 70&#9733; &middot; Attacks left: 3</div>
     </div>
 
     <div class="opponent-platform">
@@ -339,14 +552,14 @@
 
     <div id="player-status" class="status-box">
         <div class="status-header pixel-font">
-            <span>RECRUITER ANNA</span>
-            <span>&#9794; Lv.42</span>
+            <span id="recruiter-name">RECRUITER ANNA</span>
+            <span id="recruiter-level">&#9794; Lv.1</span>
         </div>
-        <div class="bar-label">HP (ENERGY): <span id="hp-text">100/100</span></div>
+        <div class="bar-label">ENERGY: <span id="hp-text">100/100</span></div>
         <div class="bar-container">
             <div id="hp-bar" class="bar-fill hp-fill"></div>
         </div>
-        <div class="bar-label" style="margin-top:2px;">BUDGET: $<span id="budget-text">1000</span></div>
+        <div class="bar-label" style="margin-top:2px;">BUDGET: $<span id="budget-text">300</span>k</div>
         <div class="bar-container">
             <div id="budget-bar" class="bar-fill budget-fill"></div>
         </div>
@@ -354,36 +567,251 @@
 
     <!-- Bottom Action Controls -->
     <div id="panel-container">
-        <div id="dialogue-box">
-            What will<br>Recruiter Anna do?
+        <div class="panel-top">
+            <div id="dialogue-box">
+                What will<br>Recruiter Anna do?
+            </div>
+            <div id="action-matrix">
+                <button class="gba-btn btn-fruit" id="btn-fruit" onclick="playMove('fruit')">FRUIT BASKET</button>
+                <button class="gba-btn btn-homeoffice" id="btn-homeoffice" onclick="playMove('homeoffice')">HOME-OFFICE</button>
+                <button class="gba-btn btn-coffee" id="btn-coffee" onclick="playMove('coffee')">COFFEE</button>
+                <button class="gba-btn btn-salary" id="btn-salary" onclick="playMove('salary')">SALARY +</button>
+                <button class="gba-btn btn-car" id="btn-car" onclick="playMove('car')" style="visibility: hidden;">COMPANY CAR</button>
+            </div>
         </div>
-        <div id="action-matrix">
-            <button class="gba-btn btn-homeoffice" onclick="playMove('homeoffice')">HOMEOFFICE</button>
-            <button class="gba-btn btn-fruit" onclick="playMove('fruit')">FRUIT BASKET</button>
-            <button class="gba-btn btn-coffee" onclick="playMove('coffee')">COFFEE</button>
-            <button class="gba-btn btn-recruit" onclick="playMove('recruit')">PITCH JOB</button>
+        <div class="decision-row">
+            <button class="gba-btn btn-run pixel-font" id="btn-run" onclick="runAway()">&#127939; RUN</button>
+            <button class="gba-btn btn-pitch pixel-font" id="btn-pitch" onclick="pitchJob()">&#129309; PITCH JOB</button>
         </div>
     </div>
 </div>
 
 <script>
     // ================================
-    // Data Layer: talents on the map
+    // Data Layer: player identity & shared leaderboard (localStorage)
     // ================================
-    const npcs = [
-        { id: 'npc-jr-dev', name: 'Junior Dev', x: 175, y: 165, recruited: false },
-        { id: 'npc-ai-lead', name: 'AI Lead', x: 600, y: 125, recruited: false },
-        { id: 'npc-frontend-fred', name: 'Frontend Fred', x: 400, y: 420, recruited: false },
-    ];
-    let hiredCount = 0;
-    document.getElementById('hired-total').textContent = npcs.length;
+    const SCORES_KEY = 'recruitemon_scores';
+    const PLAYER_NAME_KEY = 'recruitemon_playername';
+    const MAX_LEADERBOARD_ENTRIES = 10;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerName = urlParams.get('name') || localStorage.getItem(PLAYER_NAME_KEY) || 'Recruiter';
+
+    function saveScore(name, score) {
+        let scores = [];
+        try {
+            const raw = JSON.parse(localStorage.getItem(SCORES_KEY));
+            if (Array.isArray(raw)) scores = raw;
+        } catch (e) {
+            scores = [];
+        }
+
+        scores.push({ name, score, date: Date.now() });
+        scores.sort((a, b) => b.score - a.score);
+        scores = scores.slice(0, MAX_LEADERBOARD_ENTRIES);
+
+        localStorage.setItem(SCORES_KEY, JSON.stringify(scores));
+    }
 
     // ================================
-    // Logic/Middleware: overworld movement
+    // Data Layer: map layout & talent pool
     // ================================
     const WORLD_W = 800;
     const WORLD_H = 600;
     const PLAYER_HALF = 24;
+
+    // Booths double as decoration and as walls the player collides with,
+    // turning the map into an aisle layout instead of an empty square.
+    const BOOTHS = [
+        { label: 'DEVOPS<br>DUNGEON', icon: '&#127984;', theme: 'theme-devops', x: 20, y: 20, w: 150, h: 80 },
+        { label: 'CAREER FAIR', icon: '&#128188;', theme: '', x: 325, y: 20, w: 150, h: 60 },
+        { label: 'FRONTENER', icon: '&#128421;&#65039;', theme: '', x: 630, y: 20, w: 150, h: 80 },
+        { label: 'AI ARENA', icon: '&#129302;', theme: 'theme-ai', x: 20, y: 270, w: 140, h: 100 },
+        { label: 'TECH<br>SUPPORT', icon: '&#128295;', theme: '', x: 640, y: 270, w: 140, h: 100 },
+        { label: 'QA QUEST', icon: '&#128027;', theme: '', x: 20, y: 410, w: 140, h: 90 },
+    ];
+
+    // Plain corridor walls (no label) that carve the open floor into a maze
+    // instead of one big walkable square.
+    const WALLS = [
+        { x: 200, y: 150, w: 180, h: 22 },
+        { x: 460, y: 150, w: 180, h: 22 },
+        { x: 300, y: 300, w: 22, h: 140 },
+        { x: 480, y: 300, w: 22, h: 140 },
+        { x: 340, y: 470, w: 220, h: 22 },
+    ];
+
+    const OBSTACLES = BOOTHS.concat(WALLS);
+
+    const TALENT_POOL = [
+        { name: 'Junior Dev', emoji: '&#129489;&#8205;&#128187;' },
+        { name: 'AI Lead', emoji: '&#129489;&#8205;&#128300;' },
+        { name: 'Frontend Fred', emoji: '&#129489;&#8205;&#127912;' },
+        { name: 'Backend Bea', emoji: '&#129489;&#8205;&#128295;' },
+        { name: 'DevOps Dan', emoji: '&#129489;&#8205;&#128640;' },
+        { name: 'QA Quinn', emoji: '&#128373;&#65039;' },
+        { name: 'PM Priya', emoji: '&#129489;&#8205;&#128188;' },
+        { name: 'UX Uma', emoji: '&#129489;&#8205;&#127908;' },
+        { name: 'Data Dana', emoji: '&#129489;&#8205;&#128202;' },
+        { name: 'Security Sam', emoji: '&#129489;&#8205;&#128274;' },
+        { name: 'Marketing Mia', emoji: '&#129489;&#8205;&#128241;' },
+        { name: 'Sales Sean', emoji: '&#129489;&#8205;&#128188;' },
+    ];
+
+    const NPC_COUNT = 9;
+    const NPC_RADIUS = 24;
+    const MIN_NPC_DIST = 80;
+    const PLAYER_SPAWN = { x: WORLD_W / 2, y: WORLD_H - 50 };
+
+    function rectExpanded(rect, margin) {
+        return {
+            x: rect.x - margin,
+            y: rect.y - margin,
+            w: rect.w + margin * 2,
+            h: rect.h + margin * 2,
+        };
+    }
+
+    function pointInRect(x, y, rect) {
+        return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
+    }
+
+    function isInsideAnyBooth(x, y, margin) {
+        return OBSTACLES.some((obstacle) => pointInRect(x, y, rectExpanded(obstacle, margin)));
+    }
+
+    function pickRandomSpot(placed) {
+        for (let attempt = 0; attempt < 200; attempt++) {
+            const x = 50 + Math.random() * (WORLD_W - 100);
+            const y = 110 + Math.random() * (WORLD_H - 170);
+
+            if (isInsideAnyBooth(x, y, NPC_RADIUS)) continue;
+            if (Math.hypot(x - PLAYER_SPAWN.x, y - PLAYER_SPAWN.y) < MIN_NPC_DIST) continue;
+            if (placed.some((p) => Math.hypot(x - p.x, y - p.y) < MIN_NPC_DIST)) continue;
+
+            return { x, y };
+        }
+        // Fallback if the map is too crowded to find a free spot
+        return { x: WORLD_W / 2, y: WORLD_H / 2 };
+    }
+
+    function shuffle(array) {
+        const copy = array.slice();
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+    }
+
+    function randInt(min, max) {
+        return Math.floor(min + Math.random() * (max - min + 1));
+    }
+
+    function randRange(min, max) {
+        return min + Math.random() * (max - min);
+    }
+
+    function levelTitle(levelNum) {
+        if (levelNum <= 3) return 'Junior Specialist';
+        if (levelNum === 4) return 'Specialist';
+        return 'Senior Specialist';
+    }
+
+    // Randomly place a fresh set of talents every time the game loads, each with
+    // their own negotiation stats (level, salary expectation, interest, talent value)
+    const chosenTalents = shuffle(TALENT_POOL).slice(0, NPC_COUNT);
+    const placedSpots = [];
+    const npcs = chosenTalents.map((talent, i) => {
+        const spot = pickRandomSpot(placedSpots);
+        placedSpots.push(spot);
+
+        const levelNum = randInt(3, 6);
+        return {
+            id: 'npc-' + i,
+            name: talent.name,
+            emoji: talent.emoji,
+            x: spot.x,
+            y: spot.y,
+            recruited: false,
+            rejected: false,
+
+            // Negotiation stats
+            levelNum,
+            levelTitle: levelTitle(levelNum),
+            interest: randInt(10, 60),
+            salaryExpectation: [60, 70, 80, 90, 100][randInt(0, 4)],
+            offeredSalary: 50,
+            baseTalent: randInt(55, 95),
+            hireThreshold: 55 + (levelNum - 3) * 8,
+            attacksUsed: 0,
+            aggression: 0,
+            affinities: {
+                fruit: randRange(0.6, 1.4),
+                homeoffice: Math.random() < 0.3 ? 0 : randRange(0.8, 1.6),
+                coffee: randRange(0.6, 1.4),
+                car: randRange(0.6, 1.5),
+            },
+        };
+    });
+
+    const boothLayer = document.getElementById('booth-layer');
+    BOOTHS.forEach((booth) => {
+        const el = document.createElement('div');
+        el.className = 'booth pixel-font' + (booth.theme ? ' ' + booth.theme : '');
+        el.style.left = booth.x + 'px';
+        el.style.top = booth.y + 'px';
+        el.style.width = booth.w + 'px';
+        el.style.height = booth.h + 'px';
+        el.innerHTML = `<span class="booth-icon">${booth.icon}</span><span>${booth.label}</span>`;
+        boothLayer.appendChild(el);
+    });
+
+    WALLS.forEach((wall) => {
+        const el = document.createElement('div');
+        el.className = 'wall';
+        el.style.left = wall.x + 'px';
+        el.style.top = wall.y + 'px';
+        el.style.width = wall.w + 'px';
+        el.style.height = wall.h + 'px';
+        boothLayer.appendChild(el);
+    });
+
+    const bannerRow = document.getElementById('banner-row');
+    for (let i = 0; i < 16; i++) {
+        const flag = document.createElement('div');
+        flag.className = 'pennant';
+        bannerRow.appendChild(flag);
+    }
+
+    const npcLayer = document.getElementById('npc-layer');
+    npcs.forEach((npc) => {
+        const el = document.createElement('div');
+        el.className = 'npc';
+        el.id = npc.id;
+        el.style.left = npc.x + 'px';
+        el.style.top = npc.y + 'px';
+        el.innerHTML = `${npc.emoji}<span class="npc-label pixel-font">${npc.name}</span>`;
+        npcLayer.appendChild(el);
+    });
+
+    let hiredCount = 0;
+    document.getElementById('hired-total').textContent = npcs.length;
+
+    // ================================
+    // Data Layer: recruiter state (persists across the whole round, not per-candidate)
+    // ================================
+    const recruiter = {
+        energy: 100,
+        budget: 300,
+        maxBudget: 300,
+        level: 1,
+        totalScore: 0,
+    };
+
+    // ================================
+    // Logic/Middleware: overworld movement
+    // ================================
     const SPEED = 4;
     const INTERACT_RANGE = 60;
 
@@ -392,10 +820,66 @@
     const playerEl = document.getElementById('player');
     const promptEl = document.getElementById('interact-prompt');
 
-    const player = { x: WORLD_W / 2, y: WORLD_H - 70 };
+    const player = { x: PLAYER_SPAWN.x, y: PLAYER_SPAWN.y };
     const keys = new Set();
     let currentTarget = null;
     let inBattle = false;
+    let gameOver = false;
+
+    // ================================
+    // Logic/Middleware: 1-minute round timer
+    // ================================
+    const ROUND_SECONDS = 90;
+    let timeLeft = ROUND_SECONDS;
+    const timerEl = document.getElementById('world-timer');
+
+    function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        return m + ':' + String(s).padStart(2, '0');
+    }
+
+    function tickTimer() {
+        if (gameOver) return;
+        timeLeft -= 1;
+        if (timeLeft <= 10) timerEl.classList.add('time-low');
+
+        if (timeLeft <= 0) {
+            timeLeft = 0;
+            timerEl.textContent = formatTime(0);
+            endGame();
+            return;
+        }
+        timerEl.textContent = formatTime(timeLeft);
+        setTimeout(tickTimer, 1000);
+    }
+    timerEl.textContent = formatTime(timeLeft);
+    setTimeout(tickTimer, 1000);
+
+    function endGame() {
+        gameOver = true;
+        inBattle = true;
+        promptEl.classList.add('hidden');
+
+        saveScore(playerName, recruiter.totalScore);
+
+        const overlay = document.createElement('div');
+        overlay.id = 'time-up-overlay';
+        overlay.className = 'pixel-font';
+        overlay.innerHTML = `
+            <div class="headline">TIME'S UP!</div>
+            <div class="score-line">${playerName} hired ${hiredCount} / ${npcs.length} talents &mdash; ${recruiter.totalScore} pts</div>
+            <div class="overlay-actions">
+                <button class="gba-btn btn-pitch pixel-font" style="padding: 14px 28px; font-size: 16px;" onclick="location.reload()">Play Again</button>
+                <button class="gba-btn btn-homeoffice pixel-font" style="padding: 14px 28px; font-size: 16px;" onclick="location.href='index.html'">Start Screen</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    function hitsWall(x, y) {
+        return isInsideAnyBooth(x, y, PLAYER_HALF);
+    }
 
     const MOVE_KEYS = ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '];
 
@@ -419,7 +903,7 @@
         let closest = null;
         let closestDist = INTERACT_RANGE;
         for (const npc of npcs) {
-            if (npc.recruited) continue;
+            if (npc.recruited || npc.rejected) continue;
             const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
             if (dist < closestDist) {
                 closest = npc;
@@ -440,10 +924,16 @@
 
             if (dx !== 0 || dy !== 0) {
                 const len = Math.hypot(dx, dy);
-                player.x += (dx / len) * SPEED;
-                player.y += (dy / len) * SPEED;
-                player.x = Math.max(PLAYER_HALF, Math.min(WORLD_W - PLAYER_HALF, player.x));
-                player.y = Math.max(PLAYER_HALF, Math.min(WORLD_H - PLAYER_HALF, player.y));
+                const stepX = (dx / len) * SPEED;
+                const stepY = (dy / len) * SPEED;
+
+                // Move on each axis separately so the player slides along booth walls
+                // instead of getting stuck when approaching them diagonally.
+                const nextX = Math.max(PLAYER_HALF, Math.min(WORLD_W - PLAYER_HALF, player.x + stepX));
+                if (!hitsWall(nextX, player.y)) player.x = nextX;
+
+                const nextY = Math.max(PLAYER_HALF, Math.min(WORLD_H - PLAYER_HALF, player.y + stepY));
+                if (!hitsWall(player.x, nextY)) player.y = nextY;
             }
 
             playerEl.style.left = player.x + 'px';
@@ -466,24 +956,42 @@
     // ================================
     // Logic/Middleware: negotiation ("battle") screen
     // ================================
-    const state = {
-        energy: 100,
-        budget: 1000,
-        skepticism: 100
-    };
+    const MAX_ATTACKS = 3;
     let activeNpc = null;
+
+    const REACTIONS = {
+        big: ["That really impressed them!", "Their eyes lit up!", "Huge win — much more interested now!"],
+        small: ["They seem a bit more interested.", "Nice, that helped a little.", "Slight uptick in interest."],
+        none: ["Meh, they weren't fazed.", "They shrugged it off.", "Not much of a reaction."],
+        negative: ["A competitor just offered them more — interest dropped!", "They seem put off by that.", "That offer landed awkwardly."],
+    };
+
+    function pickReaction(delta) {
+        let pool;
+        if (delta < 0) pool = REACTIONS.negative;
+        else if (delta >= 15) pool = REACTIONS.big;
+        else if (delta >= 5) pool = REACTIONS.small;
+        else pool = REACTIONS.none;
+        return pool[randInt(0, pool.length - 1)];
+    }
+
+    function applyInterest(npc, delta) {
+        npc.interest = Math.max(0, Math.min(100, npc.interest + delta));
+    }
 
     function startBattle(npc) {
         inBattle = true;
         activeNpc = npc;
-        state.energy = 100;
-        state.budget = 1000;
-        state.skepticism = 100;
 
         document.getElementById('cand-name').textContent = npc.name.toUpperCase();
-        document.getElementById('dialogue-box').innerHTML = `${npc.name} looks interested...<br>What will Recruiter Anna do?`;
-        updateUI();
+        document.getElementById('cand-level').textContent = `Lv.${npc.levelNum} · ${npc.levelTitle}`;
+        document.getElementById('opponent-sprite').innerHTML = npc.emoji;
+        document.getElementById('dialogue-box').innerHTML =
+            `${npc.name} wants $${npc.salaryExpectation}k.<br>Needs ~${npc.hireThreshold}% interest to accept a pitch.`;
 
+        document.getElementById('btn-car').style.visibility = recruiter.level >= 2 ? 'visible' : 'hidden';
+
+        updateUI();
         worldScreen.classList.add('hidden');
         gbaScreen.classList.remove('hidden');
     }
@@ -491,10 +999,10 @@
     function endBattle(recruited) {
         inBattle = false;
         if (recruited && activeNpc) {
-            activeNpc.recruited = true;
             document.getElementById(activeNpc.id).classList.add('recruited');
             hiredCount += 1;
             document.getElementById('hired-count').textContent = hiredCount;
+            document.getElementById('score-value').textContent = recruiter.totalScore;
         }
         activeNpc = null;
         currentTarget = null;
@@ -505,43 +1013,116 @@
     }
 
     function updateUI() {
-        document.getElementById('skep-bar').style.width = state.skepticism + '%';
-        document.getElementById('hp-bar').style.width = state.energy + '%';
-        document.getElementById('hp-text').innerText = `${state.energy}/100`;
-        document.getElementById('budget-bar').style.width = (state.budget / 10) + '%';
-        document.getElementById('budget-text').innerText = state.budget;
+        const npc = activeNpc;
+        if (npc) {
+            document.getElementById('interest-bar').style.width = npc.interest + '%';
+            document.getElementById('interest-text').textContent = npc.interest + '%';
+            document.getElementById('cand-meta').textContent =
+                `Wants $${npc.salaryExpectation}k (offered $${npc.offeredSalary}k) · Talent ${npc.baseTalent}★ · Attacks left: ${MAX_ATTACKS - npc.attacksUsed}`;
+        }
+
+        document.getElementById('hp-bar').style.width = recruiter.energy + '%';
+        document.getElementById('hp-text').innerText = `${recruiter.energy}/100`;
+        document.getElementById('budget-bar').style.width = Math.max(0, (recruiter.budget / recruiter.maxBudget) * 100) + '%';
+        document.getElementById('budget-text').innerText = recruiter.budget;
+        document.getElementById('recruiter-level').textContent = `♀ Lv.${recruiter.level}`;
+
+        const attacksLeft = npc ? MAX_ATTACKS - npc.attacksUsed : 0;
+        ['btn-fruit', 'btn-homeoffice', 'btn-coffee', 'btn-salary', 'btn-car'].forEach((id) => {
+            document.getElementById(id).disabled = attacksLeft <= 0;
+        });
+    }
+
+    function useAttack(npc, kind) {
+        let delta = 0;
+        let note = '';
+
+        if (kind === 'fruit') {
+            delta = Math.round((6 + randRange(-3, 3)) * npc.affinities.fruit);
+        } else if (kind === 'homeoffice') {
+            if (npc.affinities.homeoffice === 0) {
+                delta = 0;
+                note = `${npc.name} doesn't care about remote work.<br>`;
+            } else {
+                delta = Math.round((18 + randRange(-4, 4)) * npc.affinities.homeoffice);
+            }
+        } else if (kind === 'coffee') {
+            delta = Math.round((10 + randRange(-4, 4)) * npc.affinities.coffee);
+            recruiter.energy = Math.min(100, recruiter.energy + 5);
+        } else if (kind === 'salary') {
+            const pct = randInt(5, 20);
+            const raise = Math.round(npc.salaryExpectation * (pct / 100));
+            const affordable = Math.min(raise, Math.max(0, recruiter.budget));
+            const newOffered = Math.min(npc.salaryExpectation, npc.offeredSalary + affordable);
+            const actualRaise = newOffered - npc.offeredSalary;
+            npc.offeredSalary = newOffered;
+            recruiter.budget = Math.max(0, recruiter.budget - actualRaise);
+            npc.aggression += 1;
+            delta = actualRaise > 0 ? Math.round(pct * 1.3) : 0;
+            note = actualRaise > 0
+                ? `Raised the offer by $${actualRaise}k (+${pct}%).<br>`
+                : `Not enough budget left to raise the offer.<br>`;
+        } else if (kind === 'car') {
+            const cost = 15;
+            if (recruiter.budget >= cost) {
+                recruiter.budget -= cost;
+                delta = Math.round((25 + randRange(-5, 5)) * npc.affinities.car);
+            } else {
+                delta = 0;
+                note = `Not enough budget for a company car.<br>`;
+            }
+        }
+
+        // Occasionally a rival offer chips away at interest, regardless of the attack used
+        if (Math.random() < 0.15) {
+            delta -= randInt(3, 10);
+        }
+
+        applyInterest(npc, delta);
+        npc.attacksUsed += 1;
+
+        return note + pickReaction(delta);
     }
 
     function playMove(move) {
+        const npc = activeNpc;
+        if (!npc || npc.attacksUsed >= MAX_ATTACKS) return;
+
         const dialog = document.getElementById('dialogue-box');
-        const name = activeNpc ? activeNpc.name : 'Junior Dev';
-
-        if (move === 'homeoffice' && state.budget >= 100) {
-            state.budget -= 100;
-            state.skepticism = Math.max(0, state.skepticism - 25);
-            dialog.innerHTML = "Offered Homeoffice!<br>Skepticism fell!";
-        } else if (move === 'fruit' && state.budget >= 50) {
-            state.budget -= 50;
-            state.skepticism = Math.max(0, state.skepticism - 10);
-            dialog.innerHTML = "Threw Fruit Basket!<br>Candidate confused!";
-        } else if (move === 'coffee' && state.budget >= 25) {
-            state.budget -= 25;
-            state.energy = Math.min(100, state.energy + 20);
-            dialog.innerHTML = "Drank Espresso!<br>Energy restored!";
-        } else if (move === 'recruit') {
-            if (state.skepticism <= 35) {
-                dialog.innerHTML = `Gotcha!<br>${name} was hired!`;
-                updateUI();
-                setTimeout(() => endBattle(true), 1400);
-                return;
-            } else {
-                dialog.innerHTML = "Too skeptical!<br>Lower skepticism first!";
-            }
-        } else {
-            dialog.innerHTML = "Not enough<br>Budget remaining!";
-        }
-
+        dialog.innerHTML = useAttack(npc, move);
         updateUI();
+    }
+
+    function pitchJob() {
+        const npc = activeNpc;
+        if (!npc) return;
+
+        const dialog = document.getElementById('dialogue-box');
+
+        if (npc.interest >= npc.hireThreshold) {
+            const fitMultiplier = Math.max(0.55, 1 - npc.aggression * 0.12);
+            const finalScore = Math.round(npc.baseTalent * fitMultiplier);
+            recruiter.totalScore += finalScore;
+            recruiter.level += 1;
+
+            dialog.innerHTML = `Gotcha! ${npc.name} was hired!<br>+${finalScore} pts &middot; LEVEL UP! You're now Lv.${recruiter.level}`;
+            updateUI();
+            setTimeout(() => endBattle(true), 1800);
+        } else {
+            recruiter.energy = Math.max(0, recruiter.energy - 20);
+            npc.rejected = true;
+            document.getElementById(npc.id).classList.add('rejected');
+
+            dialog.innerHTML = `${npc.name} turned down the offer.<br>Not enough interest to close the deal.`;
+            updateUI();
+            setTimeout(() => endBattle(false), 1800);
+        }
+    }
+
+    function runAway() {
+        if (!activeNpc) return;
+        document.getElementById('dialogue-box').innerHTML = `You stepped away from the negotiation.`;
+        setTimeout(() => endBattle(false), 600);
     }
 </script>
 </body>

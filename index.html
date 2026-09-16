@@ -9,13 +9,11 @@
   <!-- Using Google Fonts "Luckiest Guy" for the chunky game-logo look -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap">
-  <link rel="stylesheet" href="style.css?v=006">
+  <link rel="stylesheet" href="style.css?v=009">
 </head>
 <body>
   <!-- Client/UI layer -->
   <div id="game-container">
-    <button class="settings-btn" id="settingsBtn" aria-label="Settings">&#9881;</button>
-
     <div class="title-block">
       <h1 class="game-title" aria-label="Recruitemon">
         <span class="letter">R</span><span class="letter">e</span><span class="letter">c</span><span class="letter">r</span><span class="letter">u</span><span class="letter">i</span><span class="letter">t</span><span class="letter">e</span><span class="letter">m</span><span class="pokeball-o" aria-hidden="true"></span><span class="letter">n</span>
@@ -31,12 +29,21 @@
     <p class="footer-text">&copy; 2026 TalentCatch Studios | v0.9 (Beta) | recruitemon.app</p>
 
     <div id="highscore-panel" class="highscore-panel hidden">
-      <h2>High Score</h2>
-      <p id="highscore-value">0</p>
+      <h2>High Scores</h2>
+      <ol id="highscore-list" class="highscore-list"></ol>
       <button class="btn btn-close" id="closeHighScoreBtn">Close</button>
+    </div>
+
+    <div id="name-modal" class="highscore-panel hidden">
+      <h2>Who's Recruiting?</h2>
+      <input type="text" id="player-name-input" class="name-input" maxlength="20" placeholder="Recruiter Anna">
+      <div class="modal-actions">
+        <button class="btn btn-close" id="cancelNameBtn">Cancel</button>
+        <button class="btn btn-start" id="confirmNameBtn">Play</button>
+      </div>
     </div>
   </div>
 
-  <script src="app.js?v=006"></script>
+  <script src="app.js?v=009"></script>
 </body>
 </html>
