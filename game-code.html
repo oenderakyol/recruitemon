@@ -272,10 +272,32 @@
             white-space: nowrap;
         }
 
-        .npc.recruited,
-        .npc.rejected {
+        .npc-reco {
+            position: absolute;
+            top: -34px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 6px;
+            border-radius: 8px;
+            border: 1px solid var(--ink);
+            white-space: nowrap;
+            color: #fff;
+        }
+
+        .npc-reco.reco-ok { background: #2a9d6f; }
+        .npc-reco.reco-hard { background: #c0392b; }
+
+        .npc.recruited {
             opacity: 0.25;
             animation: none;
+        }
+
+        .npc.locked {
+            opacity: 0.5;
+            animation: none;
+            filter: grayscale(0.6) drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
         }
 
         #player {
@@ -350,7 +372,7 @@
 
         .player-sprite {
             position: absolute;
-            bottom: 220px;
+            bottom: 200px;
             left: 70px;
             font-size: 80px;
             transform: scaleX(-1);
@@ -374,7 +396,7 @@
         }
 
         #player-status {
-            bottom: 230px;
+            bottom: 210px;
             right: 30px;
         }
 
@@ -414,12 +436,37 @@
         .hp-fill { background: #38b000; width: 100%; }
         .budget-fill { background: #0077b6; width: 100%; }
 
+        .candidate-speech {
+            position: absolute;
+            top: 70px;
+            right: 270px;
+            width: 220px;
+            background: #fff;
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-style: italic;
+            line-height: 1.35;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .candidate-speech::after {
+            content: '';
+            position: absolute;
+            bottom: -14px;
+            right: 40px;
+            border: 8px solid transparent;
+            border-top-color: #fff;
+        }
+
         #panel-container {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 210px;
+            height: 190px;
             background: var(--accent-dark);
             border-top: 4px solid var(--accent);
             display: flex;
@@ -452,7 +499,7 @@
             flex: 1;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-rows: 1fr 1fr;
             gap: 6px;
         }
 
@@ -489,13 +536,9 @@
             box-shadow: none;
         }
 
-        .btn-homeoffice { background-color: #c0392b; }
-        .btn-fruit { background-color: #f5b942; }
-        .btn-coffee { background-color: #6d4c2f; }
-        .btn-salary { background-color: #0077b6; }
-        .btn-car { background-color: #6a4caf; grid-column: span 2; }
         .btn-run { background-color: #555; }
         .btn-pitch { background-color: var(--accent); }
+        .btn-secondary { background-color: #555; }
     </style>
 </head>
 <body>
@@ -540,12 +583,14 @@
         <div class="bar-container">
             <div id="interest-bar" class="bar-fill interest-fill"></div>
         </div>
-        <div class="cand-meta" id="cand-meta">Wants $80k &middot; Talent 70&#9733; &middot; Attacks left: 3</div>
+        <div class="cand-meta" id="cand-meta">Wants $80k &middot; Talent 70&#9733; &middot; Attacks left: 4</div>
     </div>
 
     <div class="opponent-platform">
         <div class="opponent-sprite" id="opponent-sprite">&#129489;&#8205;&#128187;</div>
     </div>
+
+    <div id="candidate-speech" class="candidate-speech hidden pixel-font"></div>
 
     <!-- Recruiter (Bottom-Left) -->
     <div class="player-sprite">&#128100;&#128188;</div>
@@ -559,7 +604,7 @@
         <div class="bar-container">
             <div id="hp-bar" class="bar-fill hp-fill"></div>
         </div>
-        <div class="bar-label" style="margin-top:2px;">BUDGET: $<span id="budget-text">300</span>k</div>
+        <div class="bar-label" style="margin-top:2px;">BUDGET: $<span id="budget-text">250</span>k</div>
         <div class="bar-container">
             <div id="budget-bar" class="bar-fill budget-fill"></div>
         </div>
@@ -571,13 +616,8 @@
             <div id="dialogue-box">
                 What will<br>Recruiter Anna do?
             </div>
-            <div id="action-matrix">
-                <button class="gba-btn btn-fruit" id="btn-fruit" onclick="playMove('fruit')">FRUIT BASKET</button>
-                <button class="gba-btn btn-homeoffice" id="btn-homeoffice" onclick="playMove('homeoffice')">HOME-OFFICE</button>
-                <button class="gba-btn btn-coffee" id="btn-coffee" onclick="playMove('coffee')">COFFEE</button>
-                <button class="gba-btn btn-salary" id="btn-salary" onclick="playMove('salary')">SALARY +</button>
-                <button class="gba-btn btn-car" id="btn-car" onclick="playMove('car')" style="visibility: hidden;">COMPANY CAR</button>
-            </div>
+            <!-- Populated by JS from ATTACK_SETS, based on the recruiter's current level -->
+            <div id="action-matrix"></div>
         </div>
         <div class="decision-row">
             <button class="gba-btn btn-run pixel-font" id="btn-run" onclick="runAway()">&#127939; RUN</button>
@@ -718,6 +758,14 @@
         return 'Senior Specialist';
     }
 
+    // Maps a candidate's own seniority to the recruiter level you'd ideally want
+    // before approaching them — shown as a badge on the map so you can scout first.
+    function recommendedLevel(npc) {
+        if (npc.levelNum <= 4) return 1;
+        if (npc.levelNum === 5) return 2;
+        return 3;
+    }
+
     // Randomly place a fresh set of talents every time the game loads, each with
     // their own negotiation stats (level, salary expectation, interest, talent value)
     const chosenTalents = shuffle(TALENT_POOL).slice(0, NPC_COUNT);
@@ -734,7 +782,7 @@
             x: spot.x,
             y: spot.y,
             recruited: false,
-            rejected: false,
+            lockedUntil: 0,
 
             // Negotiation stats
             levelNum,
@@ -744,16 +792,21 @@
             offeredSalary: 50,
             baseTalent: randInt(55, 95),
             hireThreshold: 55 + (levelNum - 3) * 8,
-            attacksUsed: 0,
             aggression: 0,
-            affinities: {
-                fruit: randRange(0.6, 1.4),
-                homeoffice: Math.random() < 0.3 ? 0 : randRange(0.8, 1.6),
-                coffee: randRange(0.6, 1.4),
-                car: randRange(0.6, 1.5),
-            },
+            affinities: {},
         };
     });
+
+    // Lazily rolls (and caches) how much a candidate responds to a given benefit
+    // category — e.g. some candidates just don't care about remote work at all.
+    function getAffinity(npc, category) {
+        if (!(category in npc.affinities)) {
+            npc.affinities[category] = category === 'remote'
+                ? (Math.random() < 0.3 ? 0 : randRange(0.8, 1.6))
+                : randRange(0.6, 1.5);
+        }
+        return npc.affinities[category];
+    }
 
     const boothLayer = document.getElementById('booth-layer');
     BOOTHS.forEach((booth) => {
@@ -791,7 +844,8 @@
         el.id = npc.id;
         el.style.left = npc.x + 'px';
         el.style.top = npc.y + 'px';
-        el.innerHTML = `${npc.emoji}<span class="npc-label pixel-font">${npc.name}</span>`;
+        npc.recommendedLevel = recommendedLevel(npc);
+        el.innerHTML = `${npc.emoji}<span class="npc-reco pixel-font" id="${npc.id}-reco">Lv.${npc.recommendedLevel}</span><span class="npc-label pixel-font">${npc.name}</span>`;
         npcLayer.appendChild(el);
     });
 
@@ -803,10 +857,49 @@
     // ================================
     const recruiter = {
         energy: 100,
-        budget: 300,
-        maxBudget: 300,
+        budget: 250,
+        maxBudget: 250,
         level: 1,
         totalScore: 0,
+    };
+
+    // Colors the "recommended level" badges based on whether the recruiter currently
+    // meets or exceeds each candidate's suggested level (so it stays up to date as you level up/down).
+    function refreshRecoBadges() {
+        npcs.forEach((npc) => {
+            const badge = document.getElementById(npc.id + '-reco');
+            if (!badge) return;
+            badge.classList.toggle('reco-ok', recruiter.level >= npc.recommendedLevel);
+            badge.classList.toggle('reco-hard', recruiter.level < npc.recommendedLevel);
+        });
+    }
+    refreshRecoBadges();
+
+    function computeLevelFromScore(score) {
+        if (score >= 300) return 3;
+        if (score >= 150) return 2;
+        return 1;
+    }
+
+    const ATTACK_SETS = {
+        1: [
+            { id: 'salary', label: 'SALARY +5%', category: 'salary', pct: 5, color: '#0077b6' },
+            { id: 'coffee', label: 'COFFEE FLATRATE', category: 'coffee', base: 10, color: '#6d4c2f' },
+            { id: 'homeoffice', label: 'HOME-OFFICE', category: 'remote', base: 18, color: '#c0392b' },
+            { id: 'fruit', label: 'FRUIT BASKET', category: 'fruit', base: 6, color: '#f5b942' },
+        ],
+        2: [
+            { id: 'salary', label: 'SALARY +10%', category: 'salary', pct: 10, color: '#0077b6' },
+            { id: 'homeoffice_equip', label: 'HOME-OFFICE + GEAR', category: 'remote', base: 22, color: '#c0392b' },
+            { id: 'jobrad', label: 'JOBRAD', category: 'jobrad', base: 16, color: '#6d4c2f' },
+            { id: 'flexdays', label: 'FLEX DAYS', category: 'flexdays', base: 16, color: '#f5b942' },
+        ],
+        3: [
+            { id: 'salary', label: 'SALARY +20%', category: 'salary', pct: 20, color: '#0077b6' },
+            { id: 'wellpass', label: 'WELLPASS', category: 'wellpass', base: 24, color: '#6d4c2f' },
+            { id: 'companycar', label: 'COMPANY CAR', category: 'car', base: 28, cost: 20, color: '#6a4caf' },
+            { id: 'pto', label: '+5 DAYS PTO', category: 'pto', base: 24, color: '#f5b942' },
+        ],
     };
 
     // ================================
@@ -871,7 +964,7 @@
             <div class="score-line">${playerName} hired ${hiredCount} / ${npcs.length} talents &mdash; ${recruiter.totalScore} pts</div>
             <div class="overlay-actions">
                 <button class="gba-btn btn-pitch pixel-font" style="padding: 14px 28px; font-size: 16px;" onclick="location.reload()">Play Again</button>
-                <button class="gba-btn btn-homeoffice pixel-font" style="padding: 14px 28px; font-size: 16px;" onclick="location.href='index.html'">Start Screen</button>
+                <button class="gba-btn btn-secondary pixel-font" style="padding: 14px 28px; font-size: 16px;" onclick="location.href='index.html'">Start Screen</button>
             </div>
         `;
         document.body.appendChild(overlay);
@@ -903,7 +996,7 @@
         let closest = null;
         let closestDist = INTERACT_RANGE;
         for (const npc of npcs) {
-            if (npc.recruited || npc.rejected) continue;
+            if (npc.recruited || Date.now() < npc.lockedUntil) continue;
             const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
             if (dist < closestDist) {
                 closest = npc;
@@ -956,47 +1049,74 @@
     // ================================
     // Logic/Middleware: negotiation ("battle") screen
     // ================================
-    const MAX_ATTACKS = 3;
     let activeNpc = null;
+    let usedAttacks = new Set();
 
-    const REACTIONS = {
-        big: ["That really impressed them!", "Their eyes lit up!", "Huge win — much more interested now!"],
-        small: ["They seem a bit more interested.", "Nice, that helped a little.", "Slight uptick in interest."],
-        none: ["Meh, they weren't fazed.", "They shrugged it off.", "Not much of a reaction."],
-        negative: ["A competitor just offered them more — interest dropped!", "They seem put off by that.", "That offer landed awkwardly."],
+    // Candidate-side speech: first-person reactions, quoted in a speech bubble
+    const QUOTES = {
+        big: ["Wow, that's amazing!", "Okay, I'm seriously impressed!", "Now THAT gets my attention!"],
+        small: ["Hmm, that's nice.", "Okay, that helps a little.", "Interesting... tell me more."],
+        none: ["Meh, I've heard better.", "That doesn't really move the needle for me.", "I'm not that fussed about it, honestly."],
+        negative: ["Actually, another company just offered me more...", "Hmm, that's a bit off-putting.", "I'm not sure that helps your case."],
+        indifferent: ["I honestly don't care about that.", "Not really my thing, but thanks I guess."],
+        hired: ["Deal! I'm excited to get started!", "You've got yourself a new hire!", "Alright, let's do this!"],
+        rejected: ["Sorry, it's just not enough for me.", "I don't think this is the right fit.", "I'll have to pass on this one."],
+        fled: ["Oh... okay, maybe another time.", "Guess I'll keep looking around."],
     };
 
-    function pickReaction(delta) {
-        let pool;
-        if (delta < 0) pool = REACTIONS.negative;
-        else if (delta >= 15) pool = REACTIONS.big;
-        else if (delta >= 5) pool = REACTIONS.small;
-        else pool = REACTIONS.none;
+    function pickQuote(pool) {
         return pool[randInt(0, pool.length - 1)];
+    }
+
+    function showSpeech(text) {
+        const bubble = document.getElementById('candidate-speech');
+        bubble.textContent = `"${text}"`;
+        bubble.classList.remove('hidden');
+    }
+
+    function hideSpeech() {
+        document.getElementById('candidate-speech').classList.add('hidden');
     }
 
     function applyInterest(npc, delta) {
         npc.interest = Math.max(0, Math.min(100, npc.interest + delta));
     }
 
+    function renderActionMatrix() {
+        const matrix = document.getElementById('action-matrix');
+        matrix.innerHTML = '';
+        ATTACK_SETS[recruiter.level].forEach((attack) => {
+            const btn = document.createElement('button');
+            btn.className = 'gba-btn';
+            btn.id = 'btn-' + attack.id;
+            btn.textContent = attack.label;
+            btn.style.backgroundColor = attack.color;
+            btn.onclick = () => playMove(attack.id);
+            matrix.appendChild(btn);
+        });
+    }
+
     function startBattle(npc) {
+        if (gameOver) return;
         inBattle = true;
         activeNpc = npc;
+        usedAttacks = new Set();
+        hideSpeech();
 
         document.getElementById('cand-name').textContent = npc.name.toUpperCase();
-        document.getElementById('cand-level').textContent = `Lv.${npc.levelNum} · ${npc.levelTitle}`;
+        document.getElementById('cand-level').textContent = `Lv.${npc.levelNum} · ${npc.levelTitle} · Reco. Lv.${npc.recommendedLevel}`;
         document.getElementById('opponent-sprite').innerHTML = npc.emoji;
         document.getElementById('dialogue-box').innerHTML =
             `${npc.name} wants $${npc.salaryExpectation}k.<br>Needs ~${npc.hireThreshold}% interest to accept a pitch.`;
 
-        document.getElementById('btn-car').style.visibility = recruiter.level >= 2 ? 'visible' : 'hidden';
-
+        renderActionMatrix();
         updateUI();
         worldScreen.classList.add('hidden');
         gbaScreen.classList.remove('hidden');
     }
 
     function endBattle(recruited) {
+        if (gameOver) return;
         inBattle = false;
         if (recruited && activeNpc) {
             document.getElementById(activeNpc.id).classList.add('recruited');
@@ -1007,6 +1127,7 @@
         activeNpc = null;
         currentTarget = null;
         promptEl.classList.add('hidden');
+        hideSpeech();
 
         gbaScreen.classList.add('hidden');
         worldScreen.classList.remove('hidden');
@@ -1014,11 +1135,13 @@
 
     function updateUI() {
         const npc = activeNpc;
+        const attackSet = ATTACK_SETS[recruiter.level];
+
         if (npc) {
             document.getElementById('interest-bar').style.width = npc.interest + '%';
             document.getElementById('interest-text').textContent = npc.interest + '%';
             document.getElementById('cand-meta').textContent =
-                `Wants $${npc.salaryExpectation}k (offered $${npc.offeredSalary}k) · Talent ${npc.baseTalent}★ · Attacks left: ${MAX_ATTACKS - npc.attacksUsed}`;
+                `Wants $${npc.salaryExpectation}k (offered $${npc.offeredSalary}k) · Talent ${npc.baseTalent}★ · Attacks left: ${attackSet.length - usedAttacks.size}`;
         }
 
         document.getElementById('hp-bar').style.width = recruiter.energy + '%';
@@ -1027,50 +1150,47 @@
         document.getElementById('budget-text').innerText = recruiter.budget;
         document.getElementById('recruiter-level').textContent = `♀ Lv.${recruiter.level}`;
 
-        const attacksLeft = npc ? MAX_ATTACKS - npc.attacksUsed : 0;
-        ['btn-fruit', 'btn-homeoffice', 'btn-coffee', 'btn-salary', 'btn-car'].forEach((id) => {
-            document.getElementById(id).disabled = attacksLeft <= 0;
+        attackSet.forEach((attack) => {
+            const btn = document.getElementById('btn-' + attack.id);
+            if (btn) btn.disabled = usedAttacks.has(attack.id);
         });
     }
 
-    function useAttack(npc, kind) {
+    function useAttack(npc, attack) {
         let delta = 0;
-        let note = '';
+        let systemNote = '';
+        let quote;
 
-        if (kind === 'fruit') {
-            delta = Math.round((6 + randRange(-3, 3)) * npc.affinities.fruit);
-        } else if (kind === 'homeoffice') {
-            if (npc.affinities.homeoffice === 0) {
-                delta = 0;
-                note = `${npc.name} doesn't care about remote work.<br>`;
-            } else {
-                delta = Math.round((18 + randRange(-4, 4)) * npc.affinities.homeoffice);
-            }
-        } else if (kind === 'coffee') {
-            delta = Math.round((10 + randRange(-4, 4)) * npc.affinities.coffee);
-            recruiter.energy = Math.min(100, recruiter.energy + 5);
-        } else if (kind === 'salary') {
-            const pct = randInt(5, 20);
-            const raise = Math.round(npc.salaryExpectation * (pct / 100));
-            const affordable = Math.min(raise, Math.max(0, recruiter.budget));
-            const newOffered = Math.min(npc.salaryExpectation, npc.offeredSalary + affordable);
+        if (attack.category === 'salary') {
+            const raise = Math.round(npc.salaryExpectation * (attack.pct / 100));
+            const newOffered = Math.min(npc.salaryExpectation, npc.offeredSalary + raise);
             const actualRaise = newOffered - npc.offeredSalary;
             npc.offeredSalary = newOffered;
-            recruiter.budget = Math.max(0, recruiter.budget - actualRaise);
             npc.aggression += 1;
-            delta = actualRaise > 0 ? Math.round(pct * 1.3) : 0;
-            note = actualRaise > 0
-                ? `Raised the offer by $${actualRaise}k (+${pct}%).<br>`
-                : `Not enough budget left to raise the offer.<br>`;
-        } else if (kind === 'car') {
-            const cost = 15;
-            if (recruiter.budget >= cost) {
-                recruiter.budget -= cost;
-                delta = Math.round((25 + randRange(-5, 5)) * npc.affinities.car);
-            } else {
+            delta = actualRaise > 0 ? Math.round(attack.pct * 1.3) : 0;
+            systemNote = actualRaise > 0
+                ? `Raised the offer by $${actualRaise}k (+${attack.pct}%). Offer now $${newOffered}k.`
+                : `They're already offered their full expectation.`;
+        } else {
+            if (attack.category === 'remote' && getAffinity(npc, 'remote') === 0) {
                 delta = 0;
-                note = `Not enough budget for a company car.<br>`;
+                quote = pickQuote(QUOTES.indifferent);
+            } else {
+                if (attack.cost) {
+                    if (recruiter.budget < attack.cost) {
+                        systemNote = `Not enough budget for ${attack.label.toLowerCase()}.`;
+                        updateUI();
+                        return { systemNote, quote: pickQuote(QUOTES.none) };
+                    }
+                    recruiter.budget -= attack.cost;
+                }
+                const affinity = getAffinity(npc, attack.category);
+                delta = Math.round((attack.base + randRange(-attack.base * 0.2, attack.base * 0.2)) * affinity);
             }
+            if (attack.category === 'coffee') {
+                recruiter.energy = Math.min(100, recruiter.energy + 5);
+            }
+            systemNote = `Used ${attack.label}.`;
         }
 
         // Occasionally a rival offer chips away at interest, regardless of the attack used
@@ -1079,21 +1199,34 @@
         }
 
         applyInterest(npc, delta);
-        npc.attacksUsed += 1;
 
-        return note + pickReaction(delta);
+        if (!quote) {
+            if (delta < 0) quote = pickQuote(QUOTES.negative);
+            else if (delta >= 15) quote = pickQuote(QUOTES.big);
+            else if (delta >= 5) quote = pickQuote(QUOTES.small);
+            else quote = pickQuote(QUOTES.none);
+        }
+
+        return { systemNote, quote };
     }
 
-    function playMove(move) {
+    function playMove(attackId) {
+        if (gameOver) return;
         const npc = activeNpc;
-        if (!npc || npc.attacksUsed >= MAX_ATTACKS) return;
+        if (!npc || usedAttacks.has(attackId)) return;
 
-        const dialog = document.getElementById('dialogue-box');
-        dialog.innerHTML = useAttack(npc, move);
+        const attack = ATTACK_SETS[recruiter.level].find((a) => a.id === attackId);
+        if (!attack) return;
+
+        usedAttacks.add(attackId);
+        const result = useAttack(npc, attack);
+        document.getElementById('dialogue-box').textContent = result.systemNote;
+        showSpeech(result.quote);
         updateUI();
     }
 
     function pitchJob() {
+        if (gameOver) return;
         const npc = activeNpc;
         if (!npc) return;
 
@@ -1103,26 +1236,48 @@
             const fitMultiplier = Math.max(0.55, 1 - npc.aggression * 0.12);
             const finalScore = Math.round(npc.baseTalent * fitMultiplier);
             recruiter.totalScore += finalScore;
-            recruiter.level += 1;
+            recruiter.budget = Math.max(0, recruiter.budget - npc.offeredSalary);
 
-            dialog.innerHTML = `Gotcha! ${npc.name} was hired!<br>+${finalScore} pts &middot; LEVEL UP! You're now Lv.${recruiter.level}`;
+            const newLevel = computeLevelFromScore(recruiter.totalScore);
+            const leveledUp = newLevel > recruiter.level;
+            if (leveledUp) {
+                recruiter.level = newLevel;
+                refreshRecoBadges();
+            }
+
+            dialog.innerHTML = `Gotcha! ${npc.name} was hired!<br>+${finalScore} pts &middot; -$${npc.offeredSalary}k budget` +
+                (leveledUp ? `<br>LEVEL UP! You're now Lv.${recruiter.level}` : '');
+            showSpeech(pickQuote(QUOTES.hired));
             updateUI();
             setTimeout(() => endBattle(true), 1800);
         } else {
             recruiter.energy = Math.max(0, recruiter.energy - 20);
-            npc.rejected = true;
-            document.getElementById(npc.id).classList.add('rejected');
+            let levelDownNote = '';
 
-            dialog.innerHTML = `${npc.name} turned down the offer.<br>Not enough interest to close the deal.`;
+            if (recruiter.energy <= 0) {
+                recruiter.energy = 100;
+                recruiter.level = Math.max(1, recruiter.level - 1);
+                refreshRecoBadges();
+                levelDownNote = `<br>Burned out! You dropped to Lv.${recruiter.level} (energy refilled).`;
+            }
+
+            npc.lockedUntil = Date.now() + 5000;
+            const npcEl = document.getElementById(npc.id);
+            npcEl.classList.add('locked');
+            setTimeout(() => npcEl.classList.remove('locked'), 5000);
+
+            dialog.innerHTML = `${npc.name} turned down the offer.<br>Not enough interest to close the deal.${levelDownNote}`;
+            showSpeech(pickQuote(QUOTES.rejected));
             updateUI();
             setTimeout(() => endBattle(false), 1800);
         }
     }
 
     function runAway() {
-        if (!activeNpc) return;
+        if (gameOver || !activeNpc) return;
         document.getElementById('dialogue-box').innerHTML = `You stepped away from the negotiation.`;
-        setTimeout(() => endBattle(false), 600);
+        showSpeech(pickQuote(QUOTES.fled));
+        setTimeout(() => endBattle(false), 900);
     }
 </script>
 </body>

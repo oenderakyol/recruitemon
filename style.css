@@ -237,3 +237,126 @@ body, html {
   padding: 8px 24px;
   font-size: 14px;
 }
+
+.instructions-panel {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+  bottom: 30px;
+  background: linear-gradient(160deg, #6c4a8f 0%, #8a6bab 60%, #a888c4 100%);
+  border: 4px solid #1a1a1a;
+  border-radius: 14px;
+  padding: 24px 28px;
+  color: #1a1a1a;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+}
+
+.instructions-panel.hidden {
+  display: none;
+}
+
+.instr-eyebrow {
+  margin: 0;
+  font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #f5e1ff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.instr-title {
+  margin: 4px 0 16px;
+  font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+  font-size: 28px;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.instr-bubble-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.instr-bubble {
+  flex: 1;
+  background: #fdf1e0;
+  border: 3px solid #1a1a1a;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.instr-bubble p {
+  margin: 0 0 10px;
+}
+
+.instr-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.instr-portraits {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.instr-portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  font-size: 34px;
+  background: #fdf1e0;
+  border: 3px solid #1a1a1a;
+  border-radius: 50%;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.instr-stats {
+  display: flex;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.instr-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 3px solid #1a1a1a;
+  border-radius: 8px;
+  background: #fdf1e0;
+}
+
+.instr-stat-value {
+  font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+  font-size: 26px;
+  color: #1a1a1a;
+}
+
+.instr-stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #5c2a00;
+}
+
+.instr-stat-energy .instr-stat-value { color: #6a4caf; }
+.instr-stat-budget .instr-stat-value { color: #1f7a5c; }
+.instr-stat-time .instr-stat-value { color: #c0392b; }
+
+.instr-back-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  font-size: 20px;
+}

@@ -9,7 +9,7 @@
   <!-- Using Google Fonts "Luckiest Guy" for the chunky game-logo look -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap">
-  <link rel="stylesheet" href="style.css?v=009">
+  <link rel="stylesheet" href="style.css?v=010">
 </head>
 <body>
   <!-- Client/UI layer -->
@@ -24,6 +24,7 @@
     <div class="button-group">
       <button class="btn btn-start" id="startGameBtn">Start Game</button>
       <button class="btn btn-highscore" id="highScoreBtn">High Score</button>
+      <button class="btn btn-highscore" id="instructionsBtn">Instructions</button>
     </div>
 
     <p class="footer-text">&copy; 2026 TalentCatch Studios | v0.9 (Beta) | recruitemon.app</p>
@@ -42,8 +43,42 @@
         <button class="btn btn-start" id="confirmNameBtn">Play</button>
       </div>
     </div>
+
+    <div id="instructions-panel" class="instructions-panel hidden">
+      <p class="instr-eyebrow">Before the Fair</p>
+      <h2 class="instr-title">Briefing with the Hiring Manager</h2>
+
+      <div class="instr-bubble-row">
+        <div class="instr-bubble">
+          <p>"We need as many strong hires as possible before the clock runs out. You've got a timer, a budget, and your energy &mdash; spend them wisely. A cold pitch wastes both."</p>
+          <p>Walk the fair with WASD or the arrow keys. Approach a candidate and press SPACE to start negotiating. Use benefits &mdash; Fruit Basket, Home-Office, Coffee, Salary Increase, and Company Car once you level up &mdash; to raise their interest.</p>
+          <p>You get 3 attacks per candidate, then it's Pitch Job to close the deal, or Run to walk away.</p>
+        </div>
+        <div class="instr-portraits">
+          <span class="instr-portrait">&#129497;</span>
+          <span class="instr-portrait">&#128373;&#65039;</span>
+        </div>
+      </div>
+
+      <div class="instr-stats">
+        <div class="instr-stat instr-stat-energy">
+          <span class="instr-stat-value">100</span>
+          <span class="instr-stat-label">Energy</span>
+        </div>
+        <div class="instr-stat instr-stat-budget">
+          <span class="instr-stat-value">$300K</span>
+          <span class="instr-stat-label">Budget</span>
+        </div>
+        <div class="instr-stat instr-stat-time">
+          <span class="instr-stat-value">90s</span>
+          <span class="instr-stat-label">Timer</span>
+        </div>
+      </div>
+
+      <button class="btn btn-start instr-back-btn" id="closeInstructionsBtn">Back to Menu</button>
+    </div>
   </div>
 
-  <script src="app.js?v=009"></script>
+  <script src="app.js?v=010"></script>
 </body>
 </html>

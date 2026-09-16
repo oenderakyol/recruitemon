@@ -53,9 +53,19 @@ function hideHighScore() {
   document.getElementById('highscore-panel').classList.add('hidden');
 }
 
+function showInstructions() {
+  document.getElementById('instructions-panel').classList.remove('hidden');
+}
+
+function hideInstructions() {
+  document.getElementById('instructions-panel').classList.add('hidden');
+}
+
 document.getElementById('startGameBtn').addEventListener('click', startGame);
 document.getElementById('highScoreBtn').addEventListener('click', showHighScore);
 document.getElementById('closeHighScoreBtn').addEventListener('click', hideHighScore);
+document.getElementById('instructionsBtn').addEventListener('click', showInstructions);
+document.getElementById('closeInstructionsBtn').addEventListener('click', hideInstructions);
 document.getElementById('cancelNameBtn').addEventListener('click', closeNameModal);
 document.getElementById('confirmNameBtn').addEventListener('click', confirmName);
 document.getElementById('player-name-input').addEventListener('keydown', (e) => {
