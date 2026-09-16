@@ -775,6 +775,17 @@
         placedSpots.push(spot);
 
         const levelNum = randInt(3, 6);
+
+        // Junior/entry-level candidates (Lv.1 recommended) are usually easier to
+        // close, but not always — keeps some variety instead of a guaranteed freebie.
+        const isEasyJunior = levelNum <= 4 && Math.random() < 0.6;
+        let hireThreshold = 55 + (levelNum - 3) * 8;
+        let interest = randInt(10, 60);
+        if (isEasyJunior) {
+            hireThreshold = Math.max(30, hireThreshold - randInt(10, 20));
+            interest = Math.min(70, interest + randInt(10, 20));
+        }
+
         return {
             id: 'npc-' + i,
             name: talent.name,
@@ -787,11 +798,11 @@
             // Negotiation stats
             levelNum,
             levelTitle: levelTitle(levelNum),
-            interest: randInt(10, 60),
+            interest,
             salaryExpectation: [60, 70, 80, 90, 100][randInt(0, 4)],
             offeredSalary: 50,
             baseTalent: randInt(55, 95),
-            hireThreshold: 55 + (levelNum - 3) * 8,
+            hireThreshold,
             aggression: 0,
             affinities: {},
         };
@@ -876,8 +887,8 @@
     refreshRecoBadges();
 
     function computeLevelFromScore(score) {
-        if (score >= 300) return 3;
-        if (score >= 150) return 2;
+        if (score >= 200) return 3;
+        if (score >= 100) return 2;
         return 1;
     }
 
