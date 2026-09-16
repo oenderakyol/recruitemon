@@ -5,16 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <meta name="googlebot" content="noindex, nofollow">
-  <title>Hello from Vercel</title>
-  <link rel="stylesheet" href="style.css?v=001">
+  <title>Recruitemon</title>
+  <link rel="stylesheet" href="style.css?v=002">
 </head>
 <body>
   <!-- Client/UI layer -->
-  <main class="wrapper">
-    <h1 id="message">Hello from Vercel</h1>
-    <button id="change-btn">change</button>
-  </main>
+  <div id="game-container">
+    <div class="button-group">
+      <button class="btn btn-start" id="startGameBtn">Start Game</button>
+      <button class="btn btn-highscore" id="highScoreBtn">High Score</button>
+    </div>
 
-  <script src="app.js?v=001"></script>
+    <div id="highscore-panel" class="highscore-panel hidden">
+      <h2>High Score</h2>
+      <p id="highscore-value">0</p>
+      <button class="btn btn-close" id="closeHighScoreBtn">Close</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=002"></script>
 </body>
 </html>

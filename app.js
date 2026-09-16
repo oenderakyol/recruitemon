@@ -1,16 +1,25 @@
 // Logic/Middleware layer
+const HIGH_SCORE_KEY = 'recruitemon_highscore';
 
-function randomBrightColor() {
-  const hue = Math.floor(Math.random() * 360);
-  const saturation = 80 + Math.random() * 20;
-  const lightness = 55 + Math.random() * 15;
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+// Data Layer: read/write high score via localStorage (browser-side persistence)
+function getHighScore() {
+  return Number(localStorage.getItem(HIGH_SCORE_KEY)) || 0;
 }
 
-function applyRandomColor() {
-  document.body.style.backgroundColor = randomBrightColor();
+function startGame() {
+  console.log('Starting game...');
+  // Add logic to hide start screen and initialize the game loop
 }
 
-document.getElementById('change-btn').addEventListener('click', applyRandomColor);
+function showHighScore() {
+  document.getElementById('highscore-value').textContent = getHighScore();
+  document.getElementById('highscore-panel').classList.remove('hidden');
+}
 
-applyRandomColor();
+function hideHighScore() {
+  document.getElementById('highscore-panel').classList.add('hidden');
+}
+
+document.getElementById('startGameBtn').addEventListener('click', startGame);
+document.getElementById('highScoreBtn').addEventListener('click', showHighScore);
+document.getElementById('closeHighScoreBtn').addEventListener('click', hideHighScore);
