@@ -1,286 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gotta Hire ’Em All! - GBA Battle UI</title>
-    <style>
-        :root {
-            --bg-color: #1B1B2F;
-            --gba-border: #4A4E69;
-            --box-bg: #E0E1DD;
-            --box-border: #1F1F1F;
-            --text-color: #111;
-            --btn-red: #D62828;
-            --btn-yellow: #F77F00;
-            --btn-green: #38B000;
-            --btn-blue: #0077B6;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Courier New', Courier, monospace;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        /* GBA Screen Container (Ratio 3:2 aspect) */
-        #gba-screen {
-            width: 640px;
-            height: 430px;
-            background: linear-gradient(to bottom, #7BDFF2 0%, #B2F7EF 50%, #52B788 50%, #2D6A4F 100%);
-            border: 12px solid #22223B;
-            border-radius: 12px;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
-            overflow: hidden;
-        }
-
-        /* --- STAGE / SPRITES --- */
-        /* Opponent Platform & Sprite (Top-Right) */
-        .opponent-platform {
-            position: absolute;
-            top: 100px;
-            right: 40px;
-            width: 180px;
-            height: 45px;
-            background: #74C69D;
-            border: 3px solid #1B4332;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-        .opponent-sprite {
-            font-size: 70px;
-            margin-bottom: 10px;
-            filter: drop-shadow(2px 4px 0px rgba(0,0,0,0.2));
-        }
-
-        /* Recruiter Back-Sprite (Bottom-Left) */
-        .player-sprite {
-            position: absolute;
-            bottom: 110px;
-            left: 50px;
-            font-size: 90px;
-            transform: scaleX(-1); /* Facing opponent */
-            filter: drop-shadow(-2px 4px 0px rgba(0,0,0,0.3));
-        }
-
-        /* --- STATUS BOXES --- */
-        .status-box {
-            position: absolute;
-            background-color: var(--box-bg);
-            color: var(--text-color);
-            border: 3px solid var(--box-border);
-            border-radius: 8px 0px 8px 0px;
-            padding: 8px 12px;
-            width: 240px;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.4);
-        }
-
-        /* Candidate Status (Top-Left) */
-        #opponent-status {
-            top: 25px;
-            left: 25px;
-        }
-
-        /* Recruiter Status (Bottom-Right) */
-        #player-status {
-            bottom: 130px;
-            right: 25px;
-        }
-
-        .status-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .bar-label {
-            font-size: 10px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .bar-container {
-            background: #555;
-            height: 10px;
-            border-radius: 5px;
-            border: 1px solid #000;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        .skep-fill { background: #E63946; width: 100%; }
-        .hp-fill { background: #38B000; width: 100%; }
-        .budget-fill { background: #0077B6; width: 100%; }
-
-        /* --- BOTTOM CONTROL PANEL (GBA UI) --- */
-        #panel-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 105px;
-            background: #2B2D42;
-            border-top: 4px solid #fff;
-            display: flex;
-            padding: 8px;
-            gap: 8px;
-        }
-
-        /* Dialogue Box (Left) */
-        #dialogue-box {
-            flex: 1.2;
-            background: #EDF2F4;
-            color: #111;
-            border: 3px solid #8D99AE;
-            border-radius: 6px;
-            padding: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            line-height: 1.4;
-        }
-
-        /* 2x2 Button Matrix (Right) */
-        #action-matrix {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 6px;
-        }
-
-        .gba-btn {
-            border: 2px solid #000;
-            border-radius: 6px;
-            color: #fff;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            box-shadow: inset 0px 2px 0px rgba(255,255,255,0.4), 0 2px 0px #000;
-            transition: transform 0.05s;
-        }
-        .gba-btn:active {
-            transform: translateY(2px);
-            box-shadow: inset 0px 1px 0px rgba(255,255,255,0.4), 0 0px 0px #000;
-        }
-
-        .btn-homeoffice { background-color: var(--btn-red); }
-        .btn-fruit { background-color: var(--btn-yellow); }
-        .btn-coffee { background-color: var(--btn-green); }
-        .btn-recruit { background-color: var(--btn-blue); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>Recruitemon</title>
+  <!-- Using Google Fonts "Luckiest Guy" for the chunky game-logo look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap">
+  <link rel="stylesheet" href="style.css?v=006">
 </head>
 <body>
+  <!-- Client/UI layer -->
+  <div id="game-container">
+    <button class="settings-btn" id="settingsBtn" aria-label="Settings">&#9881;</button>
 
-<div id="gba-screen">
-    <!-- Opponent (Top-Right) -->
-    <div id="opponent-status" class="status-box">
-        <div class="status-header">
-            <span id="cand-name">JUNIOR DEV</span>
-            <span>:female_sign: Lv.17</span>
-        </div>
-        <div class="bar-label">SKEPTICISM</div>
-        <div class="bar-container">
-            <div id="skep-bar" class="bar-fill skep-fill"></div>
-        </div>
-    </div>
+    <div class="title-block">
+      <h1 class="game-title" aria-label="Recruitemon">
+        <span class="letter">R</span><span class="letter">e</span><span class="letter">c</span><span class="letter">r</span><span class="letter">u</span><span class="letter">i</span><span class="letter">t</span><span class="letter">e</span><span class="letter">m</span><span class="pokeball-o" aria-hidden="true"></span><span class="letter">n</span>
+      </h1>
+      <p class="game-tagline">Gotta hire 'em all!</p>
+    </div>
 
-    <div class="opponent-platform">
-        <div class="opponent-sprite">:male-technologist:</div>
-    </div>
+    <div class="button-group">
+      <button class="btn btn-start" id="startGameBtn">Start Game</button>
+      <button class="btn btn-highscore" id="highScoreBtn">High Score</button>
+    </div>
 
-    <!-- Recruiter (Bottom-Left) -->
-    <div class="player-sprite">:female-office-worker:</div>
+    <p class="footer-text">&copy; 2026 TalentCatch Studios | v0.9 (Beta) | recruitemon.app</p>
 
-    <div id="player-status" class="status-box">
-        <div class="status-header">
-            <span>RECRUITER ANNA</span>
-            <span>:male_sign: Lv.42</span>
-        </div>
-        <div class="bar-label">HP (ENERGY): <span id="hp-text">100/100</span></div>
-        <div class="bar-container">
-            <div id="hp-bar" class="bar-fill hp-fill"></div>
-        </div>
-        <div class="bar-label" style="margin-top:2px;">BUDGET: $<span id="budget-text">1000</span></div>
-        <div class="bar-container">
-            <div id="budget-bar" class="bar-fill budget-fill"></div>
-        </div>
-    </div>
+    <div id="highscore-panel" class="highscore-panel hidden">
+      <h2>High Score</h2>
+      <p id="highscore-value">0</p>
+      <button class="btn btn-close" id="closeHighScoreBtn">Close</button>
+    </div>
+  </div>
 
-    <!-- Bottom Action Controls -->
-    <div id="panel-container">
-        <div id="dialogue-box">
-            What will<br>Recruiter Anna do?
-        </div>
-        <div id="action-matrix">
-            <button class="gba-btn btn-homeoffice" onclick="playMove('homeoffice')">HOMEOFFICE</button>
-            <button class="gba-btn btn-fruit" onclick="playMove('fruit')">FRUIT BASKET</button>
-            <button class="gba-btn btn-coffee" onclick="playMove('coffee')">COFFEE</button>
-            <button class="gba-btn btn-recruit" onclick="playMove('recruit')">PITCH JOB</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    // State management for Claude Code to extend
-    const state = {
-        energy: 100,
-        budget: 1000,
-        skepticism: 100
-    };
-
-    function updateUI() {
-        document.getElementById('skep-bar').style.width = state.skepticism + '%';
-        document.getElementById('hp-bar').style.width = state.energy + '%';
-        document.getElementById('hp-text').innerText = `${state.energy}/100`;
-        document.getElementById('budget-bar').style.width = (state.budget / 10) + '%';
-        document.getElementById('budget-text').innerText = state.budget;
-    }
-
-    function playMove(move) {
-        const dialog = document.getElementById('dialogue-box');
-
-        if (move === 'homeoffice' && state.budget >= 100) {
-            state.budget -= 100;
-            state.skepticism = Math.max(0, state.skepticism - 25);
-            dialog.innerHTML = "Offered Homeoffice!<br>Skepticism fell!";
-        } else if (move === 'fruit' && state.budget >= 50) {
-            state.budget -= 50;
-            state.skepticism = Math.max(0, state.skepticism - 10);
-            dialog.innerHTML = "Threw Fruit Basket!<br>Candidate confused!";
-        } else if (move === 'coffee' && state.budget >= 25) {
-            state.budget -= 25;
-            state.energy = Math.min(100, state.energy + 20);
-            dialog.innerHTML = "Drank Espresso!<br>Energy restored!";
-        } else if (move === 'recruit') {
-            if (state.skepticism <= 35) {
-                dialog.innerHTML = "Gotcha!<br>Junior Dev was hired!";
-            } else {
-                dialog.innerHTML = "Too skeptical!<br>Lower skepticism first!";
-            }
-        } else {
-            dialog.innerHTML = "Not enough<br>Budget remaining!";
-        }
-
-        updateUI();
-    }
-</script>
+  <script src="app.js?v=006"></script>
 </body>
 </html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <title>Recruitemon - Gotta Hire 'Em All!</title>
+    <!-- Using Google Fonts "Luckiest Guy" to match the title screen's game-logo look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap">
+    <style>
+        :root {
+            --accent: #d35400;
+            --accent-dark: #5c2a00;
+            --ink: #1a1a1a;
+            --cream: #fff8ec;
+            --gold: #f5b942;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+        }
+
+        body {
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .pixel-font {
+            font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+        }
+
+        /* ============================= */
+        /* WORLD / OVERWORLD (Client/UI) */
+        /* ============================= */
+        #world-screen {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid var(--ink);
+            background-color: #c9a26a;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .booth {
+            position: absolute;
+            padding: 8px 14px;
+            font-size: 13px;
+            color: var(--gold);
+            background: var(--accent-dark);
+            border: 3px solid var(--ink);
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+        }
+
+        #world-hud {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(26, 26, 26, 0.85);
+            border: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .npc {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        .npc-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--gold);
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--ink);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .npc.recruited {
+            opacity: 0.25;
+        }
+
+        #player {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            font-size: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4));
+        }
+
+        #interact-prompt {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            background: var(--accent);
+            color: #fff;
+            border: 2px solid var(--ink);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            white-space: nowrap;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+        }
+
+        /* ================================== */
+        /* BATTLE / NEGOTIATION (Client/UI)   */
+        /* ================================== */
+        #gba-screen {
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(to bottom, #fdf1d6 0%, #fdf1d6 45%, #c9a26a 45%, #a9824f 100%);
+            border: 4px solid var(--ink);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .opponent-platform {
+            position: absolute;
+            top: 130px;
+            right: 60px;
+            width: 200px;
+            height: 50px;
+            background: #d9b989;
+            border: 3px solid var(--accent-dark);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .opponent-sprite {
+            font-size: 76px;
+            margin-bottom: 10px;
+            filter: drop-shadow(2px 4px 0px rgba(0, 0, 0, 0.2));
+        }
+
+        .player-sprite {
+            position: absolute;
+            bottom: 140px;
+            left: 70px;
+            font-size: 96px;
+            transform: scaleX(-1);
+            filter: drop-shadow(-2px 4px 0px rgba(0, 0, 0, 0.3));
+        }
+
+        .status-box {
+            position: absolute;
+            background-color: var(--cream);
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            border-radius: 8px 0px 8px 0px;
+            padding: 10px 14px;
+            width: 250px;
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.35);
+        }
+
+        #opponent-status {
+            top: 30px;
+            left: 30px;
+        }
+
+        #player-status {
+            bottom: 160px;
+            right: 30px;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .bar-label {
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .bar-container {
+            background: #d9d0bf;
+            height: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--ink);
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .skep-fill { background: #c0392b; width: 100%; }
+        .hp-fill { background: #38b000; width: 100%; }
+        .budget-fill { background: #0077b6; width: 100%; }
+
+        #panel-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 130px;
+            background: var(--accent-dark);
+            border-top: 4px solid var(--accent);
+            display: flex;
+            padding: 12px;
+            gap: 12px;
+        }
+
+        #dialogue-box {
+            flex: 1.2;
+            background: var(--cream);
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        #action-matrix {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .gba-btn {
+            border: 3px solid var(--ink);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Luckiest Guy', 'Courier New', Courier, monospace;
+            font-weight: normal;
+            letter-spacing: 0.5px;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: inset -3px -3px 0px 0px rgba(0, 0, 0, 0.3);
+        }
+        .gba-btn:active {
+            box-shadow: inset 3px 3px 0px 0px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-homeoffice { background-color: #c0392b; }
+        .btn-fruit { background-color: #f5b942; }
+        .btn-coffee { background-color: #38b000; }
+        .btn-recruit { background-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<!-- ============================= -->
+<!-- WORLD / OVERWORLD (Client/UI) -->
+<!-- ============================= -->
+<div id="world-screen">
+    <div id="world-hud" class="pixel-font">Hired: <span id="hired-count">0</span> / <span id="hired-total">3</span></div>
+
+    <div class="booth pixel-font" style="top: 16px; left: 16px;">DEVOPS<br>DUNGEON</div>
+    <div class="booth pixel-font" style="top: 16px; right: 16px;">FRONTENER</div>
+    <div class="booth pixel-font" style="bottom: 16px; left: 16px;">AI ARENA</div>
+
+    <!-- Talents (Data Layer: positions/labels defined in app state below) -->
+    <div class="npc" id="npc-jr-dev" style="top: 165px; left: 175px;">
+        &#129489;&#8205;&#128187;
+        <span class="npc-label pixel-font">Junior Dev</span>
+    </div>
+    <div class="npc" id="npc-ai-lead" style="top: 125px; left: 600px;">
+        &#129489;&#8205;&#128300;
+        <span class="npc-label pixel-font">AI Lead</span>
+    </div>
+    <div class="npc" id="npc-frontend-fred" style="top: 420px; left: 400px;">
+        &#129489;&#8205;&#127912;
+        <span class="npc-label pixel-font">Frontend Fred</span>
+    </div>
+
+    <div id="interact-prompt" class="hidden pixel-font">Press SPACE to talk</div>
+
+    <div id="player">&#128373;&#65039;</div>
+</div>
+
+<!-- ============================= -->
+<!-- BATTLE / NEGOTIATION (Client/UI) -->
+<!-- ============================= -->
+<div id="gba-screen" class="hidden">
+    <!-- Opponent (Top-Right) -->
+    <div id="opponent-status" class="status-box">
+        <div class="status-header pixel-font">
+            <span id="cand-name">JUNIOR DEV</span>
+            <span>&#9792; Lv.17</span>
+        </div>
+        <div class="bar-label">SKEPTICISM</div>
+        <div class="bar-container">
+            <div id="skep-bar" class="bar-fill skep-fill"></div>
+        </div>
+    </div>
+
+    <div class="opponent-platform">
+        <div class="opponent-sprite" id="opponent-sprite">&#129489;&#8205;&#128187;</div>
+    </div>
+
+    <!-- Recruiter (Bottom-Left) -->
+    <div class="player-sprite">&#128100;&#128188;</div>
+
+    <div id="player-status" class="status-box">
+        <div class="status-header pixel-font">
+            <span>RECRUITER ANNA</span>
+            <span>&#9794; Lv.42</span>
+        </div>
+        <div class="bar-label">HP (ENERGY): <span id="hp-text">100/100</span></div>
+        <div class="bar-container">
+            <div id="hp-bar" class="bar-fill hp-fill"></div>
+        </div>
+        <div class="bar-label" style="margin-top:2px;">BUDGET: $<span id="budget-text">1000</span></div>
+        <div class="bar-container">
+            <div id="budget-bar" class="bar-fill budget-fill"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Action Controls -->
+    <div id="panel-container">
+        <div id="dialogue-box">
+            What will<br>Recruiter Anna do?
+        </div>
+        <div id="action-matrix">
+            <button class="gba-btn btn-homeoffice" onclick="playMove('homeoffice')">HOMEOFFICE</button>
+            <button class="gba-btn btn-fruit" onclick="playMove('fruit')">FRUIT BASKET</button>
+            <button class="gba-btn btn-coffee" onclick="playMove('coffee')">COFFEE</button>
+            <button class="gba-btn btn-recruit" onclick="playMove('recruit')">PITCH JOB</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================
+    // Data Layer: talents on the map
+    // ================================
+    const npcs = [
+        { id: 'npc-jr-dev', name: 'Junior Dev', x: 175, y: 165, recruited: false },
+        { id: 'npc-ai-lead', name: 'AI Lead', x: 600, y: 125, recruited: false },
+        { id: 'npc-frontend-fred', name: 'Frontend Fred', x: 400, y: 420, recruited: false },
+    ];
+    let hiredCount = 0;
+    document.getElementById('hired-total').textContent = npcs.length;
+
+    // ================================
+    // Logic/Middleware: overworld movement
+    // ================================
+    const WORLD_W = 800;
+    const WORLD_H = 600;
+    const PLAYER_HALF = 24;
+    const SPEED = 4;
+    const INTERACT_RANGE = 60;
+
+    const worldScreen = document.getElementById('world-screen');
+    const gbaScreen = document.getElementById('gba-screen');
+    const playerEl = document.getElementById('player');
+    const promptEl = document.getElementById('interact-prompt');
+
+    const player = { x: WORLD_W / 2, y: WORLD_H - 70 };
+    const keys = new Set();
+    let currentTarget = null;
+    let inBattle = false;
+
+    const MOVE_KEYS = ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '];
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (MOVE_KEYS.includes(key)) e.preventDefault();
+        if (inBattle) return;
+
+        if (key === ' ') {
+            if (currentTarget) startBattle(currentTarget);
+            return;
+        }
+        keys.add(key);
+    });
+
+    window.addEventListener('keyup', (e) => {
+        keys.delete(e.key.toLowerCase());
+    });
+
+    function findNearbyNpc() {
+        let closest = null;
+        let closestDist = INTERACT_RANGE;
+        for (const npc of npcs) {
+            if (npc.recruited) continue;
+            const dist = Math.hypot(player.x - npc.x, player.y - npc.y);
+            if (dist < closestDist) {
+                closest = npc;
+                closestDist = dist;
+            }
+        }
+        return closest;
+    }
+
+    function updateWorld() {
+        if (!inBattle) {
+            let dx = 0;
+            let dy = 0;
+            if (keys.has('w') || keys.has('arrowup')) dy -= 1;
+            if (keys.has('s') || keys.has('arrowdown')) dy += 1;
+            if (keys.has('a') || keys.has('arrowleft')) dx -= 1;
+            if (keys.has('d') || keys.has('arrowright')) dx += 1;
+
+            if (dx !== 0 || dy !== 0) {
+                const len = Math.hypot(dx, dy);
+                player.x += (dx / len) * SPEED;
+                player.y += (dy / len) * SPEED;
+                player.x = Math.max(PLAYER_HALF, Math.min(WORLD_W - PLAYER_HALF, player.x));
+                player.y = Math.max(PLAYER_HALF, Math.min(WORLD_H - PLAYER_HALF, player.y));
+            }
+
+            playerEl.style.left = player.x + 'px';
+            playerEl.style.top = player.y + 'px';
+
+            currentTarget = findNearbyNpc();
+            if (currentTarget) {
+                promptEl.classList.remove('hidden');
+                promptEl.style.left = currentTarget.x + 'px';
+                promptEl.style.top = (currentTarget.y - 28) + 'px';
+            } else {
+                promptEl.classList.add('hidden');
+            }
+        }
+
+        requestAnimationFrame(updateWorld);
+    }
+    requestAnimationFrame(updateWorld);
+
+    // ================================
+    // Logic/Middleware: negotiation ("battle") screen
+    // ================================
+    const state = {
+        energy: 100,
+        budget: 1000,
+        skepticism: 100
+    };
+    let activeNpc = null;
+
+    function startBattle(npc) {
+        inBattle = true;
+        activeNpc = npc;
+        state.energy = 100;
+        state.budget = 1000;
+        state.skepticism = 100;
+
+        document.getElementById('cand-name').textContent = npc.name.toUpperCase();
+        document.getElementById('dialogue-box').innerHTML = `${npc.name} looks interested...<br>What will Recruiter Anna do?`;
+        updateUI();
+
+        worldScreen.classList.add('hidden');
+        gbaScreen.classList.remove('hidden');
+    }
+
+    function endBattle(recruited) {
+        inBattle = false;
+        if (recruited && activeNpc) {
+            activeNpc.recruited = true;
+            document.getElementById(activeNpc.id).classList.add('recruited');
+            hiredCount += 1;
+            document.getElementById('hired-count').textContent = hiredCount;
+        }
+        activeNpc = null;
+        currentTarget = null;
+        promptEl.classList.add('hidden');
+
+        gbaScreen.classList.add('hidden');
+        worldScreen.classList.remove('hidden');
+    }
+
+    function updateUI() {
+        document.getElementById('skep-bar').style.width = state.skepticism + '%';
+        document.getElementById('hp-bar').style.width = state.energy + '%';
+        document.getElementById('hp-text').innerText = `${state.energy}/100`;
+        document.getElementById('budget-bar').style.width = (state.budget / 10) + '%';
+        document.getElementById('budget-text').innerText = state.budget;
+    }
+
+    function playMove(move) {
+        const dialog = document.getElementById('dialogue-box');
+        const name = activeNpc ? activeNpc.name : 'Junior Dev';
+
+        if (move === 'homeoffice' && state.budget >= 100) {
+            state.budget -= 100;
+            state.skepticism = Math.max(0, state.skepticism - 25);
+            dialog.innerHTML = "Offered Homeoffice!<br>Skepticism fell!";
+        } else if (move === 'fruit' && state.budget >= 50) {
+            state.budget -= 50;
+            state.skepticism = Math.max(0, state.skepticism - 10);
+            dialog.innerHTML = "Threw Fruit Basket!<br>Candidate confused!";
+        } else if (move === 'coffee' && state.budget >= 25) {
+            state.budget -= 25;
+            state.energy = Math.min(100, state.energy + 20);
+            dialog.innerHTML = "Drank Espresso!<br>Energy restored!";
+        } else if (move === 'recruit') {
+            if (state.skepticism <= 35) {
+                dialog.innerHTML = `Gotcha!<br>${name} was hired!`;
+                updateUI();
+                setTimeout(() => endBattle(true), 1400);
+                return;
+            } else {
+                dialog.innerHTML = "Too skeptical!<br>Lower skepticism first!";
+            }
+        } else {
+            dialog.innerHTML = "Not enough<br>Budget remaining!";
+        }
+
+        updateUI();
+    }
+</script>
+</body>
+</html>

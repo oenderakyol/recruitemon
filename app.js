@@ -7,8 +7,7 @@ function getHighScore() {
 }
 
 function startGame() {
-  console.log('Starting game...');
-  // Add logic to hide start screen and initialize the game loop
+  window.location.href = 'game-code.html';
 }
 
 function showHighScore() {
